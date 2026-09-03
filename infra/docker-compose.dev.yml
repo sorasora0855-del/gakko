@@ -8,6 +8,7 @@ services:
     ports:
       - "3000:3000"
     env_file: ../.env
+    mem_limit: 768m
     command: npm run dev
 
   backend:
@@ -19,6 +20,7 @@ services:
     ports:
       - "4000:4000"
     env_file: ../.env
+    mem_limit: 384m
     command: npm run dev
 
   postgres:
@@ -27,6 +29,9 @@ services:
       POSTGRES_DB: schoollink
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    command: >
+      postgres -c shared_buffers=192MB -c max_connections=50
+    mem_limit: 1024m
     ports:
       - "5432:5432"
     volumes:
@@ -34,8 +39,12 @@ services:
 
   redis:
     image: redis:7-alpine
+    command: redis-server --maxmemory 96mb --maxmemory-policy allkeys-lru
+    mem_limit: 128m
     ports:
       - "6379:6379"
 
 volumes:
   pgdata_dev:
+
+# 開発環境はnext dev/ts-node-devが本番ビルドより重いため、web/backendのmem_limitをやや広めに設定

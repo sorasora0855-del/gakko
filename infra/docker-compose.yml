@@ -4,17 +4,23 @@ services:
     ports:
       - "3000:3000"
     env_file: ../.env
+    mem_limit: 512m
+    mem_reservation: 256m
     depends_on:
       - backend
+    restart: unless-stopped
 
   backend:
     build: ../apps/backend
     ports:
       - "4000:4000"
     env_file: ../.env
+    mem_limit: 256m
+    mem_reservation: 128m
     depends_on:
       - postgres
       - redis
+    restart: unless-stopped
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -22,14 +28,27 @@ services:
       POSTGRES_DB: schoollink
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    command: >
+      postgres -c shared_buffers=192MB -c max_connections=50
+    mem_limit: 1024m
+    mem_reservation: 512m
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
+    command: redis-server --maxmemory 96mb --maxmemory-policy allkeys-lru
+    mem_limit: 128m
+    mem_reservation: 64m
     volumes:
       - redisdata:/data
+    restart: unless-stopped
 
 volumes:
   pgdata:
   redisdata:
+
+# メモリ配分メモ (本番サーバー: 総メモリ2.8GB, WSL2上で稼働)
+# web: 512MB / backend: 256MB / postgres: 1024MB / redis: 128MB = 合計1920MB
+# OS・Docker自体のオーバーヘッドを考慮し、残り約880MBを余白として確保する構成
