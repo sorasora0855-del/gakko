@@ -1,0 +1,35 @@
+services:
+  web:
+    build: ../apps/web
+    ports:
+      - "3000:3000"
+    env_file: ../.env
+    depends_on:
+      - backend
+
+  backend:
+    build: ../apps/backend
+    ports:
+      - "4000:4000"
+    env_file: ../.env
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: schoollink
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:

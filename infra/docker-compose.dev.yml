@@ -1,0 +1,41 @@
+services:
+  web:
+    build:
+      context: ../apps/web
+      target: dev
+    volumes:
+      - ../apps/web:/app
+    ports:
+      - "3000:3000"
+    env_file: ../.env
+    command: npm run dev
+
+  backend:
+    build:
+      context: ../apps/backend
+      target: dev
+    volumes:
+      - ../apps/backend:/app
+    ports:
+      - "4000:4000"
+    env_file: ../.env
+    command: npm run dev
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: schoollink
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata_dev:
