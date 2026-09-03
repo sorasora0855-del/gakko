@@ -19,6 +19,15 @@ npm install
 npm run benchmark:argon2
 ```
 
+## 実行に関する補足
+
+本スクリプトは `node --loader ts-node/esm` を使ってTypeScriptを直接実行します。
+もし `ERR_UNKNOWN_FILE_EXTENSION` などのエラーが出る場合は、Node.jsのバージョンや環境によって読み込み方式が異なるため、以下を試してください。
+
+```bash
+node --experimental-specifier-resolution=node --loader ts-node/esm scripts/benchmark-argon2.ts
+```
+
 ## 結果の見方
 
 - スクリプトは memoryCost / timeCost / parallelism の組み合わせごとに5回ハッシュ化し、平均時間(ms)を出力します。
@@ -34,6 +43,6 @@ ARGON2_PARALLELISM=<推奨値>
 
 ## 注意
 
-- サーバーの負荷が高い時間带に実行すると結果がぶれるため、他の重い処理が動いていない状態で実行してください。
+- サーバーの負荷が高い時間帯に実行すると結果がぶれるため、他の重い処理が動いていない状態で実行してください。
 - 将来サーバーのCPUを変更した場合は、このベンチマーキを再実行してパラメータを見直してください。
 - このスクリプト自体は本番の認証処理には使用しません(パラメータ決定専用ツール)。

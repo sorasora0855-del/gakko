@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "benchmark:argon2": "ts-node --esm scripts/benchmark-argon2.ts",
+    "benchmark:argon2": "node --loader ts-node/esm scripts/benchmark-argon2.ts",
     "build": "tsc -p tsconfig.json",
     "dev": "ts-node-dev --esm src/index.ts"
   },
