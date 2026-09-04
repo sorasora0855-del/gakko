@@ -1,26 +1,31 @@
 import Fastify from "fastify";
 import "dotenv/config";
 import cookie from "@fastify/cookie";
+import multipart from "@fastify/multipart";
 import { prisma } from "./db/client.js";
 import { redis } from "./cache/redis.js";
 import { authRoutes } from "./routes/auth.js";
+import { postsRoutes } from "./routes/posts.js";
+import { attachmentsRoutes } from "./routes/attachments.js";
 
 const app = Fastify({
   logger: true,
 });
 
 await app.register(cookie, {
-  secret: process.env.COOKIE_SECRET, // 署名付きCookieは未使用のため任意。今後CSRF対策で利用する可能性あり。
+  secret: process.env.COOKIE_SECRET,
+});
+
+await app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
 });
 
 await app.register(authRoutes);
+await app.register(postsRoutes);
+await app.register(attachmentsRoutes);
 
-/**
- * ヘ ル ス チ ェ ッ ク
- * DB・ Redisへ の 接 続 を 実 際 に 確 認 し 、 両 方 生 き て い る 場 合 の み 200を 返
-す 。
- * ど ち ら か が 落 ち て い る 場 合 は 503を 返 し 、 監 視 ・ デ プ ロ イ パ イ プ ラ イ ンで 検 知 で き る よ う に す る 。
- */
 app.get("/health", async (_request, reply) => {
   const status: { db: boolean; redis: boolean } = { db: false, redis: false };
   try {

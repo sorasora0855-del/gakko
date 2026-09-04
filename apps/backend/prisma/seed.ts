@@ -2,11 +2,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-/**
- * 初期seedデータ。
- * 計画書セクション2: 初期バージョンでは「1年1組」のみを対象として運用する。
- * ただし将来の拡張に備え、他学年・他クラスもレコードとしては作成し、isActive=falseで無効化しておく。
- */
 async function main() {
   const currentYear = await prisma.academicYear.upsert({
     where: { year: 2026 },
@@ -48,8 +43,26 @@ async function main() {
     }
   }
 
+  const categories = [
+    { name: "学校からのお知らせ", sortOrder: 1 },
+    { name: "授業", sortOrder: 2 },
+    { name: "宿題・提出物", sortOrder: 3 },
+    { name: "持ち物", sortOrder: 4 },
+    { name: "行事", sortOrder: 5 },
+    { name: "緊急", sortOrder: 6 },
+    { name: "その他", sortOrder: 7 },
+  ];
+  for (const c of categories) {
+    await prisma.category.upsert({
+      where: { id: `seed-category-${c.name}` },
+      update: { sortOrder: c.sortOrder, isActive: true },
+      create: { id: `seed-category-${c.name}`, name: c.name, sortOrder: c.sortOrder, isActive: true },
+    });
+  }
+
   console.log(`Seed complete. Current academic year: ${currentYear.year}`);
   console.log("Active scope: 1年1組 only (per plan v1.0 section 2).");
+  console.log(`Seeded ${categories.length} categories.`);
 }
 
 main()
