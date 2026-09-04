@@ -6,7 +6,7 @@
   "scripts": {
     "benchmark:argon2": "node --loader ts-node/esm scripts/benchmark-argon2.ts",
     "build": "tsc -p tsconfig.json",
-    "dev": "ts-node-dev --esm src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
@@ -21,7 +21,7 @@
   "devDependencies": {
     "typescript": "^5.5.4",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.1",
     "@types/node": "^20.14.15",
     "prisma": "^5.19.1"
   }
