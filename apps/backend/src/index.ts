@@ -7,6 +7,9 @@ import { redis } from "./cache/redis.js";
 import { authRoutes } from "./routes/auth.js";
 import { postsRoutes } from "./routes/posts.js";
 import { attachmentsRoutes } from "./routes/attachments.js";
+import { adminUsersRoutes } from "./routes/admin-users.js";
+import { adminAcademicsRoutes } from "./routes/admin-academics.js";
+import { adminReportsRoutes } from "./routes/admin-reports.js";
 
 const app = Fastify({
   logger: true,
@@ -25,6 +28,9 @@ await app.register(multipart, {
 await app.register(authRoutes);
 await app.register(postsRoutes);
 await app.register(attachmentsRoutes);
+await app.register(adminUsersRoutes);
+await app.register(adminAcademicsRoutes);
+await app.register(adminReportsRoutes);
 
 app.get("/health", async (_request, reply) => {
   const status: { db: boolean; redis: boolean } = { db: false, redis: false };
